@@ -1,0 +1,243 @@
+swagger: "2.0"
+info:
+  description: "This is API for Bank Account project"
+  version: "1.0.0"
+  title: "Swagger of Bank Account API"
+
+host: "127.0.0.1:5555"
+
+tags:
+- name: "user"
+  description: "Operations about user"
+- name: "bank_account"
+  description: "Everything about your bank account"
+
+schemes:
+- "https"
+- "http"
+
+paths:
+  /auth/login:
+    post:
+      tags:
+      - "user"
+      summary: "Logs user into the system"
+      description: ""
+      operationId: "loginUser"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              success:
+                type: integer
+              message:
+                type: string
+              access_token:
+                type: string
+              role:
+                type: integer
+        400:
+           description: "Invalid username/password supplied"
+        404:
+          description: "User not found"
+
+  /accounts:
+    post:
+      tags:
+      - "bank_account"
+      summary: "Add a new bank account to the db"
+      operationId: "addAccount"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Account object that needs to be added to the db"
+        required: true
+        schema:
+          $ref: "#/definitions/Account"
+      responses:
+        405:
+          description: "Invalid input"
+        200:
+          description: "OK"
+          schema:
+            $ref: '#/definitions/Account'
+      security:
+      - APIKeyHeader: []
+
+  /accounts/{account_number}:
+    get:
+      tags:
+      - "bank_account"
+      summary: "Find bank account by ID"
+      description: "Returns a single bank account"
+      operationId: "getAccount"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - name: "account_number"
+        in: "path"
+        description: "account number of bank account"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Account"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Account not found"
+        405:
+          description: "Invalid input"
+      security:
+      - APIKeyHeader: []
+
+    put:
+      tags:
+      - "bank_account"
+      summary: "Updates bank account"
+      description: ""
+      operationId: "updateAccount"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - in: "path"
+        name: "account_number"
+        description: "account number of bank account"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "Account object that needs to be added to the db"
+        required: true
+        schema:
+          $ref: "#/definitions/Account"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: object
+            properties:
+              success:
+                type: integer
+              message:
+                type: string
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Account not found"
+        405:
+          description: "Invalid input"
+      security:
+      - APIKeyHeader: []
+
+    delete:
+      tags:
+      - "bank_account"
+      summary: "Deletes a bank account"
+      description: ""
+      operationId: "deleteAccount"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - in: "path"
+        name: "account_number"
+        description: "account number of bank account"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: object
+            properties:
+              success:
+                type: integer
+              message:
+                type: string
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Account not found"
+        405:
+          description: "Invalid input"
+      security:
+      - APIKeyHeader: []
+
+securityDefinitions:
+  APIKeyHeader:
+    type: apiKey
+    in: header
+    name: Authorization
+
+definitions:
+  User:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+  Account:
+    type: "object"
+    properties:
+      account_number:
+        type: "integer"
+      balance:
+        type: "integer"
+      firstname:
+        type: "string"
+      lastname:
+        type: "string"
+      age:
+        type: "integer"
+      gender:
+        type: "string"
+      address:
+        type: "string"
+      employer:
+        type: "string"
+      email:
+        type: "string"
+      city:
+        type: "string"
+      state:
+        type: "string"

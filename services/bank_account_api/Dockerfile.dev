@@ -1,0 +1,17 @@
+FROM hnq90/chip_python_dev:0.1.1
+
+WORKDIR /usr/src/app
+
+COPY ./requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+ENV PYTHONUNBUFFERED 1
+
+COPY . .
+
+RUN chmod a+x /usr/src/app/docker-entrypoint.sh
+
+CMD ["python", "app.py", "runserver"]
+
+ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]

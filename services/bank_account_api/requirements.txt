@@ -1,0 +1,20 @@
+# Install swagger-ui before connexion.
+Babel==2.6.0
+bcrypt==3.1.4
+decorator==4.3.0
+Flask==1.0.2
+Flask-Babel==0.11.2
+Flask-Bcrypt==0.7.1
+Flask-Cors==3.0.4
+Flask-Script==2.0.6
+Flask-Testing==0.7.1
+gunicorn==19.8.1
+pep8==1.7.1
+PyJWT==1.6.4
+pymongo==3.5.1
+uuid==1.30
+python-dotenv==0.12.0
+Werkzeug==0.14.1
+flask_pymongo==2.3.0
+connexion[swagger-ui]
+connexion==2.1.0

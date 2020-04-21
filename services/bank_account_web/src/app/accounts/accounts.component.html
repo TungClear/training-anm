@@ -1,0 +1,207 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <span>Training</span>
+    <span class="example-spacer"></span>
+    <button mat-flat-button color="warn" (click)="onClickLogout()">Logout</button>
+  </mat-toolbar-row>
+</mat-toolbar>
+<div>
+  <h1 style="text-align: center;">Tài Khoản Ngân Hàng</h1>
+
+  <!-- Thêm mới account  -->
+  <mat-card class="list-section">
+    <mat-card-content>
+      <button mat-raised-button color="primary" (click)="onClickAddAccount()" style="margin-bottom: 1rem;" *ngIf="isAdmin">
+        <mat-icon aria-hidden="false" aria-label="Example home icon">add_circle</mat-icon>
+        Thêm mới account
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tìm kiếm  -->
+  <mat-card class="">
+    <mat-card-content>
+      <h2>Tìm kiếm</h2>
+      <form class="form-search">
+        <mat-form-field class="example-half-width mr-2">
+          <mat-label>Account Number</mat-label>
+          <input matInput placeholder="" value="" [(ngModel)]="accountSearch.account_number" name="account_number" type="number">
+        </mat-form-field>
+        <mat-form-field class="example-half-width mr-2">
+          <mat-label>Firstname</mat-label>
+          <input matInput placeholder="" value="" [(ngModel)]="accountSearch.firstname" name="firstname">
+        </mat-form-field>
+        <mat-form-field class="example-half-width mr-2">
+          <mat-label>Lastname</mat-label>
+          <input matInput placeholder="" value="" [(ngModel)]="accountSearch.lastname" name="lastname">
+        </mat-form-field>
+        <button
+          mat-icon-button aria-label="Example icon-button with a heart icon" color="primary"
+          matTooltip="Tìm kiếm thêm"
+          matTooltipPosition="above"
+          (click)="onClickAdvanceSearch()"
+          *ngIf="!isAdvanceSearch"
+          type="button"
+        >
+          <mat-icon>expand_more</mat-icon>
+        </button>
+        <div *ngIf="isAdvanceSearch">
+          <span class="example-half-width mr-2">
+            <mat-form-field class="age-from mr-1">
+              <mat-label>From</mat-label>
+              <span matPrefix>Age &nbsp;&nbsp;&nbsp;</span>
+              <input matInput placeholder="" value="" [(ngModel)]="accountSearch.ageFrom" name="ageFrom" type="number" min="1" max="150" >
+            </mat-form-field>
+            <mat-form-field class="age-from">
+              <mat-label>To</mat-label>
+              <input matInput placeholder="" value="" [(ngModel)]="accountSearch.ageTo" name="ageFrom" type="number" min="1" max="150" >
+            </mat-form-field>
+          </span>
+          <mat-form-field class="example-half-width mr-2">
+            <mat-label>Email</mat-label>
+            <input matInput placeholder="" value="" [(ngModel)]="accountSearch.email" name="email">
+          </mat-form-field>
+          <mat-form-field class="example-half-width mr-2">
+            <mat-label>Gender</mat-label>
+            <mat-select [(value)]="accountSearch.gender">
+              <mat-option *ngFor="let item of gender" [value]="item">
+                {{item === 'M' ? 'Male' : item === 'F' ? 'Female' : 'Both'}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="example-half-width mr-2">
+            <mat-label>Balance</mat-label>
+            <input matInput placeholder="" value="" [(ngModel)]="accountSearch.balance" name="balance" type="number" min="0">
+          </mat-form-field>
+          <mat-form-field class="example-half-width mr-2">
+            <mat-label>Address</mat-label>
+            <input matInput placeholder="" value="" [(ngModel)]="accountSearch.address" name="address">
+          </mat-form-field>
+          <mat-form-field class="example-half-width mr-2">
+            <mat-label>Employer</mat-label>
+            <input matInput placeholder="" value="" [(ngModel)]="accountSearch.employer" name="employer">
+          </mat-form-field>
+          <mat-form-field class="example-half-width mr-2">
+            <mat-label>City</mat-label>
+            <input matInput placeholder="" value="" [(ngModel)]="accountSearch.city" name="city">
+          </mat-form-field>
+          <mat-form-field class="example-half-width mr-2">
+            <mat-label>State</mat-label>
+            <input matInput placeholder="" value="" [(ngModel)]="accountSearch.state" name="state">
+          </mat-form-field>
+          <button
+            mat-icon-button aria-label="Example icon-button with a heart icon" color="primary"
+            matTooltip="Tắt Tìm kiếm thêm"
+            matTooltipPosition="above"
+            (click)="onClickAdvanceSearch()"
+            *ngIf="isAdvanceSearch"
+            type="button"
+          >
+            <mat-icon>expand_less</mat-icon>
+          </button>
+        </div>
+        <br />
+        <button mat-raised-button color="primary" type="submit" style="margin-right: 1rem;" (click)="searchAccount(null, false)">Tìm kiếm</button>
+        <button mat-raised-button color="primary" type="button" style="margin-right: 1rem;" (click)="resetSearch()">Reset Tìm kiếm</button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Danh sách -->
+  <mat-card class="list-section">
+    <mat-card-content>
+      <h2>Danh sách</h2>
+      <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+      <div class="mat-elevation-z8">
+        <table mat-table [dataSource]="dataSource" matSort (matSortChange)="sortAccount($event, true)">
+          <ng-container matColumnDef="account_number">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="account_number"> Account Number </th>
+            <td mat-cell *matCellDef="let element"> {{element.account_number}} </td>
+          </ng-container>
+          <ng-container matColumnDef="firstname">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="firstname"> Firstname </th>
+            <td mat-cell *matCellDef="let element"> {{element.firstname}} </td>
+          </ng-container>
+          <ng-container matColumnDef="lastname">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="lastname"> Lastname </th>
+            <td mat-cell *matCellDef="let element"> {{element.lastname}} </td>
+          </ng-container>
+          <ng-container matColumnDef="balance">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="balance"> Balance </th>
+            <td mat-cell *matCellDef="let element"> {{element.balance}} </td>
+          </ng-container>
+          <ng-container matColumnDef="age">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="age"> Age </th>
+            <td mat-cell *matCellDef="let element"> {{element.age}} </td>
+          </ng-container>
+          <ng-container matColumnDef="gender">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="gender"> Gender </th>
+            <td mat-cell *matCellDef="let element"> {{element.gender === 'M' ? 'Male' : 'Female'}} </td>
+          </ng-container>
+          <ng-container matColumnDef="address">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="address"> Address </th>
+            <td mat-cell *matCellDef="let element"> {{element.address}} </td>
+          </ng-container>
+          <ng-container matColumnDef="employer">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="employer"> Employer </th>
+            <td mat-cell *matCellDef="let element"> {{element.employer}} </td>
+          </ng-container>
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="email"> Email </th>
+            <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+          </ng-container>
+          <ng-container matColumnDef="city">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="city"> City </th>
+            <td mat-cell *matCellDef="let element"> {{element.city}} </td>
+          </ng-container>
+          <ng-container matColumnDef="state">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="state"> State </th>
+            <td mat-cell *matCellDef="let element"> {{element.state}} </td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Action </th>
+            <td mat-cell *matCellDef="let element" style="text-align: center;">
+              <button
+                mat-icon-button aria-label="Example icon-button with a heart icon"
+                (click)="onClickViewAccount(element)"
+                matTooltip="View"
+                matTooltipPosition="above"
+              >
+                <mat-icon>remove_red_eye</mat-icon>
+              </button>
+              <button
+                mat-icon-button aria-label="Example icon-button with a heart icon"
+                (click)="onClickEditAccount(element)"
+                *ngIf="isAdmin"
+                matTooltip="Edit"
+                matTooltipPosition="above"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button aria-label="Example icon-button with a heart icon"
+                (click)="onClickDeleteAccount(element.account_number)"
+                *ngIf="isAdmin"
+                matTooltip="Delete"
+                matTooltipPosition="above"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator
+          [length]="total"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          (page)="pageEvent = searchAccount($event, true)"
+        >
+        </mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

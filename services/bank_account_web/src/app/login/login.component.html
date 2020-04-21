@@ -1,0 +1,46 @@
+<div class="form-login" style="padding: 8rem 1rem 0 1rem">
+  <mat-card class="input-section">
+    <h1 style="text-align: center;">Đăng Nhập</h1>
+    <mat-card-content>
+      <form class="example-form"  [formGroup]="loginForm" novalidate (ngSubmit)="onSubmitAccountDetails(loginForm.value)">
+        <mat-form-field class="full-width">
+          <input
+            matInput
+            placeholder="Username"
+            formControlName="username"
+            required
+          >
+          <mat-error *ngFor="let validation of account_validation_messages.username">
+            <mat-error
+            class="error-message"
+            *ngIf="loginForm.get('username').hasError(validation.type) && (loginForm.get('username').dirty || loginForm.get('username').touched)"
+            >
+            {{validation.message}}
+            </mat-error>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <input
+            matInput
+            type="password"
+            placeholder="Password"
+            formControlName="password"
+            required
+          >
+          <mat-error *ngFor="let validation of account_validation_messages.password">
+            {{validation.message}}
+          </mat-error>
+        </mat-form-field>
+        <button
+          class="submit-btn"
+          color="primary"
+          mat-raised-button
+          type="submit"
+          [disabled]="!loginForm.valid"
+        >
+          Đăng nhập
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

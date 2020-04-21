@@ -1,0 +1,282 @@
+swagger: "2.0"
+
+info:
+  title: "{{title}}"
+  version: "1.0"
+
+basePath: /
+
+tags:
+  - name: "user"
+    description: "API for user"
+  - name: "bank_account"
+    description: "API for bank account"
+
+paths:
+  /login:
+    post:
+      tags:
+      - "user"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              success:
+                type: integer
+              message:
+                type: string
+              access_token:
+                type: string
+              role:
+                type: integer
+        400:
+          description: "Invalid username/password supplied"
+        404:
+          description: "User not found"
+
+  /accounts:
+    get:
+      tags:
+      - "bank_account"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "page_size"
+          in: "query"
+          description: "page_size"
+          required: true
+          type: "integer"
+        - name: "page_index"
+          in: "query"
+          description: "page_index"
+          required: true
+          type: "integer"
+        - name: "order_by"
+          in: "query"
+          description: "order_by"
+          required: true
+          type: "string"
+        - name: "order_direction"
+          in: "query"
+          description: "order_direction"
+          required: true
+          type: "integer"
+        - name: "account"
+          in: "query"
+          description: "account"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: 'Fetch a list of accounts'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Account'
+      security:
+        - oauth2: []
+
+    post:
+      tags:
+      - "bank_account"
+      summary: "Add a new bank account to the db"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Account object that needs to be added to the db"
+        required: true
+        schema:
+          $ref: "#/definitions/Account"
+      responses:
+        405:
+          description: "Invalid input"
+        200:
+          description: "OK"
+          schema:
+            $ref: '#/definitions/Account'
+      security:
+        - oauth2: []
+
+  '/accounts/{id}':
+    get:
+      tags:
+      - "bank_account"
+      summary: "Returns a single bank account"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - name: "id"
+        in: "path"
+        description: "account number of bank account"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Account"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Account not found"
+        405:
+          description: "Invalid input"
+      security:
+        - oauth2: []  
+
+    put:
+      tags:
+      - "bank_account"
+      summary: "Updates bank account"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - in: "path"
+        name: "id"
+        description: "account number of bank account"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "Account object that needs to be added to the db"
+        required: true
+        schema:
+          $ref: "#/definitions/AccountEdit"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: object
+            properties:
+              success:
+                type: integer
+              message:
+                type: string
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Account not found"
+        405:
+          description: "Invalid input"
+      security:
+        - oauth2: []
+
+    delete:
+      tags:
+      - "bank_account"
+      summary: "Deletes a bank account"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - in: "path"
+        name: "id"
+        description: "account number of bank account"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: object
+            properties:
+              success:
+                type: integer
+              message:
+                type: string
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Account not found"
+        405:
+          description: "Invalid input"
+      security:
+        - oauth2: []
+
+securityDefinitions:
+  oauth2:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: https://example.com/oauth2/dialog
+    x-tokenInfoFunc: utils.common.api_authorization_check
+    scopes:
+      user: current user
+
+definitions:
+  User:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+
+  Account:
+    type: "object"
+    properties:
+      account_number:
+        type: "integer"
+      balance:
+        type: "integer"
+      firstname:
+        type: "string"
+      lastname:
+        type: "string"
+      age:
+        type: "integer"
+      gender:
+        type: "string"
+      address:
+        type: "string"
+      employer:
+        type: "string"
+      email:
+        type: "string"
+      city:
+        type: "string"
+      state:
+        type: "string"
+
+  AccountEdit:
+    type: "object"
+    properties:
+      balance:
+        type: "integer"
+      firstname:
+        type: "string"
+      lastname:
+        type: "string"
+      age:
+        type: "integer"
+      gender:
+        type: "string"
+      address:
+        type: "string"
+      employer:
+        type: "string"
+      email:
+        type: "string"
+      city:
+        type: "string"
+      state:
+        type: "string"

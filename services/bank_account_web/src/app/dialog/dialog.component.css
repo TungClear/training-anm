@@ -1,0 +1,26 @@
+.form-add {
+  min-width: 300px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.example-full-width {
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.row{
+  display: flex;
+}
+
+.col{
+  flex-basis: 50%;
+}
+
+.mr-4{
+  margin-right: 4%;
+}

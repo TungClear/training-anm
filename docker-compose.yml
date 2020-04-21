@@ -1,0 +1,166 @@
+version: "3.6"
+
+services:
+
+# ========
+# Mongo DB
+# ========
+  db_bank:
+    container_name: db_bank
+    image: mongo
+    networks:
+      - bank_app_network
+    restart: unless-stopped
+
+# ================
+# Mongo Admin UI
+# ================
+  admin_mongo:
+    container_name: admin_mongo
+    image: adicom/admin-mongo
+    restart: unless-stopped
+    networks:
+      - bank_app_network
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    stdin_open: true
+    tty: true
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "2"
+    ports:
+      - 1234:1234
+    depends_on:
+      - db_bank
+
+# ================
+# Swagger
+# ================
+  swagger:
+    image: swaggerapi/swagger-ui
+    container_name: swagger
+    restart: unless-stopped
+    volumes:
+      - ./services/swagger/swagger.yaml:/docs/swagger.yaml
+    environment:
+      SWAGGER_JSON: "/docs/swagger.yaml"
+    ports:
+      - 3010:8080
+    networks:
+      - bank_app_network
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    stdin_open: true
+    tty: true
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "2"
+
+# ================
+# Web Repositories
+# ================
+  bank_account_web:
+    container_name: bank_account_web
+    image: bank_account_web
+    build:
+      context: ./services/bank_account_web
+      dockerfile: Dockerfile
+    networks:
+      - bank_app_network
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    stdin_open: true
+    tty: true
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "2"
+    environment:
+      TERM: linux
+      LANG: "C.UTF-8"
+      API_URL: "http://127.0.0.1:5555"
+    ports:
+      - 5556:5000
+    depends_on:
+      - bank_account_api
+
+# ================
+# API Repositories
+# ================
+  bank_account_api:
+    container_name: bank_account_api
+    image: bank_account_api
+    build:
+      context: ./services/bank_account_api
+      dockerfile: Dockerfile.dev
+    networks:
+      - bank_app_network
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    stdin_open: true
+    tty: true
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "2"
+    environment:
+      TERM: linux
+      LANG: "C.UTF-8"
+      APP_SETTINGS: api.config.DevelopmentConfig
+      APP_DOCKERIZED: 1
+      MONGO_URI: mongodb://db_bank:27017/bank
+      MONGO_DBNAME: bank
+      JWT_SECRET: viettelanm@2020
+    ports:
+      - 5555:8080
+    depends_on:
+      - db_bank
+
+# ================
+# API Repositories For Test
+# ================
+  bank_account_api_test:
+    container_name: bank_account_api_test
+    image: bank_account_api_test
+    build:
+      context: ./services/bank_account_api
+      dockerfile: Dockerfile.dev
+    networks:
+      - bank_app_network
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    stdin_open: true
+    tty: true
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "2"
+    command: "tail -f /dev/null"
+    environment:
+      TERM: linux
+      LANG: "C.UTF-8"
+      APP_SETTINGS: api.config.TestingConfig
+      HTTP_ADDRESS: 0.0.0.0
+      HTTP_PORT: 5555
+      APP_DOCKERIZED: 1
+      MONGO_URI: mongodb://db_bank:27017/bank
+      MONGO_DBNAME: bank
+      JWT_SECRET: viettelanm@2020
+    depends_on:
+      - db_bank
+
+networks:
+  bank_app_network:
+    driver: bridge

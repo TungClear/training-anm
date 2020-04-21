@@ -1,0 +1,50 @@
+.form-add {
+  min-width: 300px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.form-search{
+  width: 100%;
+}
+
+.example-full-width {
+  width: 100%;
+}
+
+.example-half-width{
+  width: 17%;
+}
+
+.mr-2{
+  margin-right: 2%;
+}
+
+.mr-1{
+  margin-right: 5px;
+}
+
+table {
+  width: 100%;
+}
+
+.example-icon {
+  padding: 0 14px;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.d-block{
+  display: block;
+}
+
+.d-none{
+  display: none;
+}
+
+.age-from{
+  width: 8.25%;
+  min-width: 80px;
+}
